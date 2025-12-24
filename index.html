@@ -1,62 +1,204 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>생성형 AI(Generative AI) 소개</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>생성형 AI 입문 — 원페이지 학습</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN + config -->
+  <script>
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: { inter: ['Inter', 'ui-sans-serif', 'system-ui'] },
+            colors: {
+              primary: {
+                DEFAULT: '#0b3b66'
+              }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    body{font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;line-height:1.6;color:#222;margin:0;background:#f7f9fc}
-    .container{max-width:900px;margin:40px auto;background:#fff;padding:32px;border-radius:10px;box-shadow:0 6px 24px rgba(20,30,50,0.08)}
-    h1{margin:0 0 8px 0;font-size:28px;color:#0b3b66}
-    p.lead{color:#445; margin-top:0}
-    section{margin-top:20px}
-    h2{font-size:18px;color:#0b3b66;margin-bottom:8px}
-    ul{margin:0 0 0 20px}
-    footer{margin-top:28px;font-size:13px;color:#667}
-    .tag{display:inline-block;background:#eef6ff;color:#0b3b66;padding:4px 8px;border-radius:999px;font-size:12px;margin-right:8px}
+    :root { --bg: #f7fafc; --card: #ffffff; }
+    .btn-3d {
+      --tw-bg-opacity: 1;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-3d:active { transform: translateY(1px) scale(.997); }
+    /* 3D shadow layers */
+    .btn-3d::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: .75rem; z-index: -1;
+      box-shadow:
+        0 12px 28px rgba(11,59,102,0.12),
+        0 6px 12px rgba(11,59,102,0.08);
+      transform: translateY(8px);
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .btn-3d:hover::before { transform: translateY(6px); }
+
+    /* Thin gradient border effect for cards */
+    .card-outer { padding: 1px; border-radius: 0.75rem; }
+    .card-inner { border-radius: 0.7rem; }
+
+    html { scroll-behavior: smooth; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>생성형 AI(Generative AI)란?</h1>
-    <p class="lead">생성형 AI는 새로운 텍스트, 이미지, 오디오, 영상 등을 자동으로 만들어내는 인공지능 기술입니다. 입력(prompt)에 따라 창의적이고 실용적인 결과물을 생성합니다.</p>
+<body class="font-inter bg-gray-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <!-- Sticky blurred navbar -->
+  <nav class="sticky top-4 z-50 max-w-6xl mx-auto px-4 md:px-6">
+    <div class="backdrop-blur-md bg-white/60 dark:bg-slate-800/60 border border-white/10 dark:border-slate-700/40 rounded-xl p-3 flex items-center justify-between gap-4 shadow-sm">
+      <div class="flex items-center gap-3">
+        <a href="#" class="text-lg font-semibold text-primary">생성형 AI 입문</a>
+        <div class="hidden md:flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+          <a href="#hero" class="nav-link px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">홈</a>
+          <a href="#llm" class="nav-link px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">LLM 원리</a>
+          <a href="#prompt" class="nav-link px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">프롬프트</a>
+          <a href="#ethics" class="nav-link px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700">윤리</a>
+        </div>
+      </div>
 
-    <section>
-      <h2>간단한 원리</h2>
-      <ul>
-        <li>대규모 데이터로 학습된 모델이 패턴을 학습합니다.</li>
-        <li>확률 모델을 사용해 다음에 올 단어나 픽셀을 생성합니다.</li>
-        <li>언어모델(LLM), 이미지 생성 모델(예: diffusion) 등 다양한 아키텍처가 사용됩니다.</li>
+      <div class="flex items-center gap-3">
+        <button id="theme-toggle" aria-label="Toggle theme" class="w-10 h-10 rounded-md flex items-center justify-center bg-white dark:bg-slate-700 border dark:border-slate-600 shadow-sm">
+          <svg id="icon-sun" class="w-5 h-5 text-yellow-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="12" cy="12" r="3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
+          <svg id="icon-moon" class="w-5 h-5 text-slate-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="max-w-6xl mx-auto px-4 md:px-6 py-10">
+    <!-- Hero -->
+    <section id="hero" class="mt-6 md:mt-10 flex flex-col md:flex-row items-center gap-8">
+      <div class="flex-1">
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">AI의 미래를 학습하세요</h1>
+        <p class="mt-4 text-slate-600 dark:text-slate-300 max-w-xl">이 페이지는 생성형 AI의 핵심 개념을 한눈에 볼 수 있도록 구성된 원페이지 학습 자료입니다. 실습과 개념을 빠르게 훑어보세요.</p>
+
+        <div class="mt-6 flex items-center gap-4">
+          <a href="#llm" class="relative inline-flex items-center btn-3d px-6 py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-indigo-600 via-pink-500 to-yellow-400 shadow-lg">
+            <span class="relative z-10">학습 시작하기</span>
+          </a>
+          <a href="#prompt" class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm">목차로 이동</a>
+        </div>
+      </div>
+
+      <div class="flex-1">
+        <div class="w-full aspect-[4/3] rounded-xl bg-gradient-to-br from-indigo-50 to-pink-50 dark:from-slate-800 dark:to-slate-700 p-6 flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-6xl font-extrabold text-indigo-600 dark:text-indigo-300">🤖</div>
+            <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">모델 → 프롬프트 → 결과</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid sections -->
+    <section class="mt-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Card 1: LLM 원리 -->
+        <div class="group card-outer bg-transparent rounded-xl transition-all">
+          <div class="rounded-lg bg-white dark:bg-slate-800 p-6 card-inner transform transition group-hover:scale-105">
+            <h3 class="text-lg font-semibold">LLM 원리</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">대규모 언어 모델은 토큰 기반 확률 예측으로 다음에 올 단어를 생성합니다. Attention과 Transformer 구조가 핵심입니다.</p>
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">핵심: 컨텍스트, 어텐션, 사전학습</div>
+          </div>
+          <!-- gradient border (visible on hover) -->
+          <div class="pointer-events-none absolute inset-0 -z-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style="background:linear-gradient(90deg, rgba(59,130,246,0.85), rgba(236,72,153,0.85), rgba(250,204,21,0.85)); filter: blur(8px);"></div>
+        </div>
+
+        <!-- Card 2: 프롬프트 엔지니어링 -->
+        <div class="group card-outer bg-transparent rounded-xl transition-all">
+          <div class="rounded-lg bg-white dark:bg-slate-800 p-6 card-inner transform transition group-hover:scale-105">
+            <h3 class="text-lg font-semibold">프롬프트 엔지니어링</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">명확한 지침, 예시 제공, 조건 제약으로 모델 출력을 제어하세요. 체인오브생각(Chain-of-Thought) 등의 기법도 활용됩니다.</p>
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">팁: 간단→구체→검증 루프</div>
+          </div>
+          <div class="pointer-events-none absolute inset-0 -z-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style="background:linear-gradient(90deg, rgba(236,72,153,0.85), rgba(168,85,247,0.85)); filter: blur(8px);"></div>
+        </div>
+
+        <!-- Card 3: AI 윤리 -->
+        <div class="group card-outer bg-transparent rounded-xl transition-all">
+          <div class="rounded-lg bg-white dark:bg-slate-800 p-6 card-inner transform transition group-hover:scale-105">
+            <h3 class="text-lg font-semibold">AI 윤리</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">허위 정보, 편향, 프라이버시, 저작권 등 리스크를 고려해야 합니다. 검증과 인간 감독이 필수입니다.</p>
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">권장: 투명성, 검증, 거버넌스</div>
+          </div>
+          <div class="pointer-events-none absolute inset-0 -z-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style="background:linear-gradient(90deg, rgba(16,185,129,0.85), rgba(59,130,246,0.85)); filter: blur(8px);"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Short examples / tips -->
+    <section id="prompt" class="mt-10">
+      <h2 class="text-xl font-semibold">프롬프트 실전 팁</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+        <li>• 예시 제공: 모델이 따라야 할 출력 예시를 넣습니다.</li>
+        <li>• 역할 지정: "당신은 경험 많은 데이터 과학자입니다"처럼 역할을 지정하세요.</li>
+        <li>• 검증 루프: 출력 결과를 검토하고 재시도하며 개선하세요.</li>
       </ul>
     </section>
 
-    <section>
-      <h2>활용 사례</h2>
-      <ul>
-        <li>텍스트 생성: 기사, 요약, 이메일 초안, 코드 생성</li>
-        <li>이미지 생성: 광고, 디자인 시안, 아트워크 제작</li>
-        <li>음성/오디오: 음성 합성, 음악 작곡</li>
-        <li>제품 개발: 시나리오 기반 테스트 데이터 생성</li>
-      </ul>
+    <section id="ethics" class="mt-10 mb-16">
+      <h2 class="text-xl font-semibold">윤리적으로 사용하기</h2>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">모델의 한계와 위험을 이해하고, 민감한 적용을 피하거나 추가 검증을 거치세요.</p>
     </section>
 
-    <section>
-      <h2>윤리와 안전</h2>
-      <ul>
-        <li>허위 정보(착각, hallucination) 위험을 관리해야 합니다.</li>
-        <li>편향(bias)과 저작권 문제를 고려해야 합니다.</li>
-        <li>민감한 사용처에서는 검증, 인간 감독, 정책이 필요합니다.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>시작해보기</h2>
-      <p>간단히 사용해보려면 공개 API나 오픈소스 모델을 통해 프롬프트를 작성하고 결과를 평가해보세요. 작은 실험부터 안전 장치를 갖추어 확장하는 것이 좋습니다.</p>
-    </section>
-
-    <footer>
-      <span class="tag">요약</span>생성형 AI는 창작과 자동화의 도구이며, 유용성과 위험을 함께 고려해야 합니다.
+    <footer class="py-6 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700">
+      © 2025 생성형 AI 입문 · 본 페이지는 학습용입니다.
     </footer>
-  </div>
+  </main>
+
+  <script>
+    // Theme toggle with persistence
+    (function(){
+      const root = document.documentElement;
+      const toggle = document.getElementById('theme-toggle');
+      const iconSun = document.getElementById('icon-sun');
+      const iconMoon = document.getElementById('icon-moon');
+
+      function setIcons(isDark){
+        iconSun.classList.toggle('hidden', !isDark);
+        iconMoon.classList.toggle('hidden', isDark);
+      }
+
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let isDark = saved ? saved === 'dark' : prefersDark;
+      if(isDark) root.classList.add('dark');
+      setIcons(isDark);
+
+      toggle.addEventListener('click', ()=>{
+        isDark = !root.classList.toggle('dark');
+        if(root.classList.contains('dark')) localStorage.setItem('theme','dark'); else localStorage.setItem('theme','light');
+        setIcons(root.classList.contains('dark'));
+      });
+    })();
+
+    // Active nav link on scroll
+    (function(){
+      const sections = document.querySelectorAll('main section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          const id = e.target.id;
+          const link = document.querySelector(`.nav-link[href="#${id}"]`);
+          if(e.isIntersecting){ navLinks.forEach(n=>n.classList.remove('font-semibold')); if(link) link.classList.add('font-semibold'); }
+        });
+      },{rootMargin: '-40% 0px -40% 0px'});
+      sections.forEach(s=>obs.observe(s));
+    })();
+  </script>
 </body>
 </html>
